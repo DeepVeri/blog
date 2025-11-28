@@ -335,25 +335,41 @@ body {
     margin: 48px 0 24px;
     letter-spacing: -0.5px;
 }
-.article-content code {
+.article-content code:not(pre code) {
     background: var(--code-bg);
     padding: 2px 6px;
     border-radius: 4px;
     font-size: 0.9em;
     color: #d63384;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 .article-content pre {
-    background: var(--code-bg);
-    padding: 20px;
+    /* background is handled by highlight.js theme or custom component */
     border-radius: 8px;
     overflow-x: auto;
     margin-bottom: 30px;
+    background-color: #fafafa; /* Softer light background */
+    border: 1px solid #e5e7eb;
 }
+/* Remove conflicting styles for pre code and force visibility */
 .article-content pre code {
-    background: none;
+    background: transparent;
     padding: 0;
-    color: inherit;
+    border-radius: 0;
     font-size: 14px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+/* Ensure highlight.js spans inherit color properly */
+.article-content pre code span {
+    color: inherit;
+}
+
+[data-theme="dark"] .article-content pre {
+    background-color: #161b22;
+    border-color: #30363d;
+}
+[data-theme="dark"] .article-content pre code {
+    color: #c9d1d9;
 }
 
 .back-link {

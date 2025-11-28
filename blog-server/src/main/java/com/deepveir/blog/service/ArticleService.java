@@ -48,11 +48,11 @@ public class ArticleService {
     }
 
     public Page<Article> listArticles(Pageable pageable) {
-        return articleRepository.findAll(pageable);
+        return articleRepository.findAllWithDetails(pageable);
     }
 
     public Optional<Article> getArticleById(UUID id) {
-        return articleRepository.findById(id);
+        return articleRepository.findWithDetailsById(id);
     }
 
     public Optional<Article> getArticleByArticleId(String articleId) {
@@ -100,6 +100,7 @@ public class ArticleService {
         return categoryRepository.findByCategoryId(categoryId);
     }
 
+    @Transactional
     public Article updateArticle(Article existing, Article updates) {
         if (updates.getTitle() != null) {
             existing.setTitle(updates.getTitle());
@@ -128,8 +129,10 @@ public class ArticleService {
         if (updates.getCategory() != null) {
             existing.setCategory(updates.getCategory());
         }
+        // 更新标签：先清空旧的关联，再添加新的，避免主键冲突
+        existing.getTags().clear();
         if (!updates.getTags().isEmpty()) {
-            existing.setTags(updates.getTags());
+            existing.getTags().addAll(updates.getTags());
         }
         return articleRepository.save(existing);
     }

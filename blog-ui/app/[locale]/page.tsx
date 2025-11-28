@@ -52,7 +52,7 @@ async function getArticles(): Promise<{ articles: ArticleCard[]; hasMore: boolea
       id: article.articleId || article.id,
       title: article.title,
       excerpt: article.summary?.trim() || stripMarkdown(article.content)?.slice(0, 120) || '暂无描述',
-      tag: article.tags?.[0]?.name || '未分类',
+      tag: article.category?.name || article.tags?.[0]?.name || '未分类',
       date: formatDate(article.publishedAt),
       readTime: article.readTime || '待补充阅读时长',
       slug: article.articleId || article.id

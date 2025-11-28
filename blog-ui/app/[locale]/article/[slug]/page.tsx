@@ -10,7 +10,7 @@ import rehypeHighlight from 'rehype-highlight';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import rehypeSlug from 'rehype-slug';
-import 'highlight.js/styles/atom-one-dark.css';
+import 'highlight.js/styles/atom-one-light.css'; // 切换为 Atom One Light 主题，颜色更丰富
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:8080";
 
@@ -253,15 +253,26 @@ export default function ArticleDetailPage() {
                 )}
 
                 {article.content ? (
-                  <div className="prose dark:prose-invert max-w-none prose-pre:p-0 prose-pre:bg-transparent">
+                  <div className="prose dark:prose-invert max-w-none prose-pre:p-0 prose-pre:bg-transparent prose-code:before:content-none prose-code:after:content-none">
                     <ReactMarkdown
                       remarkPlugins={[remarkGfm]}
                       rehypePlugins={[rehypeRaw, rehypeSlug, rehypeHighlight]}
                       components={{
                         pre: ({ children }) => (
-                          <div className="relative group my-4 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-800 bg-[#282c34]">
+                          <pre className="relative group my-6 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 shadow-sm">
                             {children}
-                          </div>
+                          </pre>
+                        ),
+                        img: ({ src, alt, ...props }: any) => (
+                          <img
+                            src={src}
+                            alt={alt || ''}
+                            className="rounded-lg my-4 max-w-full h-auto cursor-zoom-in hover:scale-[1.02] transition-transform"
+                            onClick={() => src && setLightboxImg(src)}
+                            loading="lazy"
+                            referrerPolicy="no-referrer"
+                            {...props}
+                          />
                         ),
                         code: ({ node, className, children, ...props }: any) => {
                           const match = /language-(\w+)/.exec(className || '');
@@ -273,23 +284,23 @@ export default function ArticleDetailPage() {
                               <>
                                 <button
                                   onClick={() => handleCopy(codeString, codeString.slice(0, 10))}
-                                  className="absolute top-3 right-3 p-1.5 rounded-md bg-white/10 hover:bg-white/20 text-gray-300 transition-all opacity-0 group-hover:opacity-100 z-10"
+                                  className="absolute top-3 right-3 p-1.5 rounded-md bg-slate-200 hover:bg-slate-300 text-slate-600 transition-all opacity-0 group-hover:opacity-100 z-10"
                                   title="复制代码"
                                 >
                                   {copiedCode === codeString.slice(0, 10) ? (
-                                    <Check size={14} className="text-green-400" />
+                                    <Check size={14} className="text-green-600" />
                                   ) : (
                                     <Copy size={14} />
                                   )}
                                 </button>
-                                <code className={`${className} block p-4 overflow-x-auto text-sm`} {...props}>
+                                <code className={`${className} block whitespace-pre p-5 overflow-x-auto text-sm font-mono leading-relaxed`} {...props}>
                                   {children}
                                 </code>
                               </>
                             );
                           }
                           return (
-                            <code className={`${className} bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm`} {...props}>
+                            <code className={`${className} bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded text-sm font-mono text-[#d63384]`} {...props}>
                               {children}
                             </code>
                           );

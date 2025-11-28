@@ -206,7 +206,7 @@ npm run dev
 
 | 作者微信 |
 | :---: |
-| ![作者微信](./docs/images/wechat-author.png) |
+| <img src="./docs/images/wechat-author.png" width="200" alt="作者微信"> |
 
 ## 贡献指南
 

@@ -1,0 +1,38 @@
+{
+  "Navigation": {
+    "home": "Home",
+    "category": "Category",
+    "about": "About",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "theme": "Toggle Theme",
+    "dashboard": "Dashboard"
+  },
+  "Auth": {
+    "welcome": "Welcome Back",
+    "createAccount": "Create Account",
+    "email": "Email Address",
+    "password": "Password",
+    "loginButton": "Sign In",
+    "registerButton": "Sign Up",
+    "toRegister": "No account? Sign up",
+    "toLogin": "Have an account? Sign in",
+    "success": "Success"
+  },
+  "Common": {
+    "loading": "Loading...",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "save": "Save",
+    "actions": "Actions"
+  },
+  "Admin": {
+    "dashboard": "Dashboard",
+    "users": "User Management",
+    "articles": "Articles",
+    "settings": "Settings"
+  }
+}

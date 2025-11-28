@@ -1,0 +1,38 @@
+{
+  "Navigation": {
+    "home": "首页",
+    "category": "分类",
+    "about": "关于",
+    "login": "登录",
+    "register": "注册",
+    "logout": "退出登录",
+    "theme": "切换模式",
+    "dashboard": "后台管理"
+  },
+  "Auth": {
+    "welcome": "欢迎回来",
+    "createAccount": "创建账号",
+    "email": "邮箱地址",
+    "password": "密码",
+    "loginButton": "立即登录",
+    "registerButton": "创建账号",
+    "toRegister": "还没有账号？去注册",
+    "toLogin": "已有账号？去登录",
+    "success": "成功"
+  },
+  "Common": {
+    "loading": "加载中...",
+    "confirm": "确定",
+    "cancel": "取消",
+    "delete": "删除",
+    "edit": "编辑",
+    "save": "保存",
+    "actions": "操作"
+  },
+  "Admin": {
+    "dashboard": "控制台",
+    "users": "用户管理",
+    "articles": "文章管理",
+    "settings": "系统设置"
+  }
+}

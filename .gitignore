@@ -1,0 +1,68 @@
+# =======================
+# IDE & Editor
+# =======================
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.project
+.classpath
+.settings/
+
+# =======================
+# Java / Maven
+# =======================
+target/
+*.class
+*.jar
+*.war
+*.log
+hs_err_pid*
+
+# =======================
+# Node.js / npm
+# =======================
+node_modules/
+.next/
+out/
+.nuxt/
+dist/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# =======================
+# Environment & Secrets
+# =======================
+.env
+.env.local
+.env.*.local
+*.local
+
+# 后端配置文件（包含敏感信息）
+blog-server/src/main/resources/application.properties
+blog-server/src/main/resources/application-*.properties
+!blog-server/src/main/resources/application.properties.example
+
+# =======================
+# OS Generated
+# =======================
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# =======================
+# Test & Coverage
+# =======================
+coverage/
+*.lcov
+.nyc_output/
+
+# =======================
+# Build
+# =======================
+build/
+*.tsbuildinfo

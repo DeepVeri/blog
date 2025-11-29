@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Edit, Trash2, UserPlus, Search, Loader2, X, Save, Users } from 'lucide-react';
 import { AdminModal } from "../../components/AdminModal";
+import { API_BASE } from "@/lib/apiConfig";
 
 interface User {
   id: string;
@@ -35,8 +36,6 @@ interface OrganizationOption {
   name: string;
   parentOrgId?: string | null;
 }
-
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? "http://localhost:8080";
 
 interface OrganizationTreeNode extends OrganizationOption {
   children?: OrganizationTreeNode[];

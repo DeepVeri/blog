@@ -6,6 +6,7 @@ import { Moon, Sun, User, LogOut, Loader2, Languages, LayoutDashboard } from 'lu
 import AuthModal from './AuthModal';
 import { useTranslations, useLocale } from 'next-intl';
 import { usePathname, useRouter } from 'next/navigation';
+import { API_BASE } from "@/lib/apiConfig";
 
 export default function Header() {
   const t = useTranslations('Navigation');
@@ -61,7 +62,7 @@ export default function Header() {
     setIsLoggingOut(true);
     try {
       // 调用后端退出接口
-      await fetch('http://localhost:8080/api/auth/logout', { method: 'POST' });
+      await fetch(`${API_BASE}/api/auth/logout`, { method: 'POST' });
     } catch (error) {
       console.error('Logout error:', error);
     } finally {

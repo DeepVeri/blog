@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { Users, FileText, Settings, Home, LogOut, ChevronLeft, ChevronRight, Bell, User, ChevronDown, Shield, List } from "lucide-react";
 import * as LucideIcons from "lucide-react";
 import { useState, useEffect, useRef } from "react";
+import { API_BASE } from "@/lib/apiConfig";
 
 // Helper to dynamically get icon component
 const DynamicIcon = ({ name, size = 20, className }: { name: string; size?: number; className?: string }) => {
@@ -35,7 +36,7 @@ export default function AdminLayout({
     if (email) setUserEmail(email);
     
     if (userId) {
-      fetch(`http://localhost:8080/api/menus/user/${userId}`)
+      fetch(`${API_BASE}/api/menus/user/${userId}`)
         .then(res => res.json())
         .then(data => {
           // 如果后端返回空或者出错，我们至少保留一个控制台入口防止完全空白
@@ -66,7 +67,7 @@ export default function AdminLayout({
 
   const handleLogout = async () => {
     try {
-      await fetch('http://localhost:8080/api/auth/logout', { method: 'POST' });
+      await fetch(`${API_BASE}/api/auth/logout`, { method: 'POST' });
     } catch (error) {
       console.error('Logout error:', error);
     } finally {

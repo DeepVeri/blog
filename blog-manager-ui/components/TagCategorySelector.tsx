@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { X, Check, ChevronDown } from "lucide-react";
-
-const API_BASE = "http://localhost:8080";
+import { API_BASE } from "@/lib/apiConfig";
 
 type Tag = { id: string; tagId: string; name: string };
 type Category = { id: string; categoryId: string; name: string };

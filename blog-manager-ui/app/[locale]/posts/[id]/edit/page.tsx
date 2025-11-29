@@ -6,8 +6,7 @@ import { FileText, ArrowLeft, Save } from "lucide-react";
 import Link from "next/link";
 import MarkdownEditor from "@/components/MarkdownEditor";
 import TagCategorySelector from "@/components/TagCategorySelector";
-
-const API_BASE = "http://localhost:8080";
+import { API_BASE } from "@/lib/apiConfig";
 
 type FormData = {
   articleId: string;

@@ -3,8 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { List, Plus, Edit, Trash2, X, Loader2, Save, ChevronRight, ChevronDown, Folder, FileText, MousePointerClick, GripVertical, ArrowUp, ArrowDown } from 'lucide-react';
 import { AdminModal } from "../../components/AdminModal";
-
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? "http://localhost:8080";
+import { API_BASE } from "@/lib/apiConfig";
 
 interface Menu {
   id: string;
@@ -225,7 +224,7 @@ export default function MenusPage() {
     ];
     
     try {
-      await fetch('http://localhost:8080/api/menus/sort', {
+      await fetch(`${API_BASE}/api/menus/sort`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updates),

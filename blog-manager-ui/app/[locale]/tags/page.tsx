@@ -3,8 +3,7 @@
 import { useEffect, useState } from "react";
 import { Tag as TagIcon, Plus, Pencil, Trash2, X, RefreshCw, Loader2, Save } from "lucide-react";
 import { AdminModal } from "../../components/AdminModal";
-
-const API_BASE = "http://localhost:8080";
+import { API_BASE } from "@/lib/apiConfig";
 
 type TagRecord = {
   id: string;

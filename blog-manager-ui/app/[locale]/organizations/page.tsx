@@ -1,10 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Building2, Plus, Edit, Trash2, X, Loader2, Save } from "lucide-react";
+import { Building2, Plus, Pencil, Edit, Trash2, X, RefreshCw, Loader2, Save } from "lucide-react";
 import { AdminModal } from "../../components/AdminModal";
-
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? "http://localhost:8080";
+import { API_BASE } from "@/lib/apiConfig";
 
 interface Organization {
   id: string;

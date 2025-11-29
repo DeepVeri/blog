@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { User, Mail, Lock, Save, Loader2, ArrowLeft } from 'lucide-react';
+import { API_BASE } from "@/lib/apiConfig";
 import { useRouter } from 'next/navigation';
 
 export default function SettingsPage() {
@@ -28,7 +29,7 @@ export default function SettingsPage() {
       setUserId(storedId);
       
       // Fetch latest user data from backend using readable userId
-      fetch(`http://localhost:8080/api/users/by-user-id/${storedId}`)
+      fetch(`${API_BASE}/api/users/by-user-id/${storedId}`)
         .then(res => {
           if (res.ok) return res.json();
           throw new Error('Failed to fetch user data');
@@ -60,7 +61,7 @@ export default function SettingsPage() {
       if (password) updateData.password = password;
       if (name) updateData.name = name;
 
-      const res = await fetch(`http://localhost:8080/api/users/${dbUserId}`, {
+      const res = await fetch(`${API_BASE}/api/users/${dbUserId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

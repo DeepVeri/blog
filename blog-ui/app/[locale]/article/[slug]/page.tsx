@@ -11,8 +11,7 @@ import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import rehypeSlug from 'rehype-slug';
 import 'highlight.js/styles/atom-one-light.css'; // 切换为 Atom One Light 主题，颜色更丰富
-
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:8080";
+import { API_BASE } from '@/lib/apiConfig';
 
 const formatDate = (value?: string | null) => {
   if (!value) return "待发布";

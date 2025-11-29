@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { X, Mail, Lock, Loader2, Check } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { API_BASE } from '@/lib/apiConfig';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -29,8 +30,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
     
     try {
       // 指向 Spring Boot 后端
-      const baseUrl = 'http://localhost:8080';
-      const endpoint = isLogin ? `${baseUrl}/api/auth/login` : `${baseUrl}/api/auth/register`;
+      const endpoint = isLogin ? `${API_BASE}/api/auth/login` : `${API_BASE}/api/auth/register`;
       
       const res = await fetch(endpoint, {
         method: 'POST',

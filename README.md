@@ -167,6 +167,59 @@ npm install
 npm run dev
 ```
 
+## Docker 部署
+
+> 说明：以下为推荐的基础 Docker 部署方式，仅供参考。
+
+### 部署后端服务 blog-server
+
+```bash
+cd blog-server
+
+# 构建镜像
+docker build -t blog-server:1.0 .
+
+# 运行容器（映射 8080 端口）
+docker run -d \
+  --name blog-server \
+  -p 8080:8080 \
+  blog-server:1.0
+```
+
+### 部署博客前端 blog-ui
+
+```bash
+cd blog-ui
+
+# 构建镜像（NEXT_PUBLIC_API_URL 指向后端地址，例如 http://YOUR_SERVER_IP:8080）
+docker build \
+  --build-arg NEXT_PUBLIC_API_URL=http://YOUR_SERVER_IP:8080 \
+  -t blog-ui:1.0 .
+
+# 运行容器（映射 3000 端口）
+docker run -d \
+  --name blog-ui \
+  -p 3000:3000 \
+  blog-ui:1.0
+```
+
+### 部署后台管理前端 blog-manager-ui
+
+```bash
+cd blog-manager-ui
+
+# 构建镜像（NEXT_PUBLIC_API_URL 指向后端地址，例如 http://YOUR_SERVER_IP:8080）
+docker build \
+  --build-arg NEXT_PUBLIC_API_URL=http://YOUR_SERVER_IP:8080 \
+  -t blog-manager-ui:1.0 .
+
+# 运行容器（映射 3001 端口）
+docker run -d \
+  --name blog-manager-ui \
+  -p 3001:3001 \
+  blog-manager-ui:1.0
+```
+
 ## 开发环境
 
 | 工具 | 说明 |

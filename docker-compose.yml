@@ -1,0 +1,126 @@
+# =================================
+# DeepVeir Blog - Docker Compose
+# =================================
+# 使用方法:
+#   1. 复制 .env.example 为 .env 并配置
+#   2. docker-compose up -d
+#   3. 访问: 博客 http://localhost:3000, 后台 http://localhost:3001
+
+version: '3.8'
+
+services:
+  # =================================
+  # MySQL 数据库
+  # =================================
+  mysql:
+    image: mysql:8.0
+    container_name: blog-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root123456}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-blog}
+      MYSQL_USER: ${MYSQL_USER:-blog_user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-blog_password}
+      TZ: Asia/Shanghai
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./blog-server/src/main/resources/schema.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --default-authentication-plugin=mysql_native_password
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-root123456}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - blog-network
+
+  # =================================
+  # 后端服务 (Spring Boot)
+  # =================================
+  blog-server:
+    build:
+      context: ./blog-server
+      dockerfile: Dockerfile
+    container_name: blog-server
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      # 数据库配置
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE:-blog}?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=utf8&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER:-blog_user}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD:-blog_password}
+      # JPA 配置
+      SPRING_JPA_HIBERNATE_DDL_AUTO: none
+      SPRING_JPA_SHOW_SQL: "false"
+      # 初始化脚本（首次启动设为 always）
+      SPRING_SQL_INIT_MODE: ${SQL_INIT_MODE:-never}
+      # JVM 参数
+      JAVA_OPTS: "-Xms256m -Xmx512m"
+      TZ: Asia/Shanghai
+    ports:
+      - "${SERVER_PORT:-8080}:8080"
+    networks:
+      - blog-network
+
+  # =================================
+  # 博客前端 (Next.js)
+  # =================================
+  blog-ui:
+    build:
+      context: ./blog-ui
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8080}
+    container_name: blog-ui
+    restart: unless-stopped
+    depends_on:
+      - blog-server
+    environment:
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8080}
+      TZ: Asia/Shanghai
+    ports:
+      - "${BLOG_UI_PORT:-3000}:3000"
+    networks:
+      - blog-network
+
+  # =================================
+  # 后台管理 (Next.js)
+  # =================================
+  blog-manager-ui:
+    build:
+      context: ./blog-manager-ui
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8080}
+    container_name: blog-manager-ui
+    restart: unless-stopped
+    depends_on:
+      - blog-server
+    environment:
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8080}
+      TZ: Asia/Shanghai
+    ports:
+      - "${ADMIN_UI_PORT:-3001}:3001"
+    networks:
+      - blog-network
+
+# =================================
+# 网络配置
+# =================================
+networks:
+  blog-network:
+    driver: bridge
+
+# =================================
+# 数据卷
+# =================================
+volumes:
+  mysql_data:
+    driver: local

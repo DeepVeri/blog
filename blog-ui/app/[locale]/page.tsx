@@ -1,7 +1,6 @@
 import { Metadata } from 'next';
 import HomeClient from './HomeClient';
-
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8080';
+import { API_BASE } from '@/lib/apiConfig';
 
 export type ArticleCard = {
   id: string;

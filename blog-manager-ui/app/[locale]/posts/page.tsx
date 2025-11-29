@@ -3,8 +3,7 @@
 import { useEffect, useState } from "react";
 import { FileText, RefreshCw, Plus, Pencil, Trash2, X } from "lucide-react";
 import Link from "next/link";
-
-const API_BASE = "http://localhost:8080";
+import { API_BASE } from "@/lib/apiConfig";
 
 type ArticleRecord = {
   id: string;

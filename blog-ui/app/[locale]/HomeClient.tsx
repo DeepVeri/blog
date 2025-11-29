@@ -3,8 +3,7 @@
 import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArticleCard } from './page';
-
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8080';
+import { API_BASE } from '@/lib/apiConfig';
 
 const formatDate = (value: string | undefined): string => {
   if (!value) return '待发布';

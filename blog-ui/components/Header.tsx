@@ -84,6 +84,8 @@ export default function Header() {
       setTimeout(() => {
         localStorage.removeItem('user_token');
         localStorage.removeItem('user_email');
+        // 清除跨子域 Cookie
+        document.cookie = 'auth_token=; path=/; domain=.deepveir.com; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
         // Trigger update
         window.dispatchEvent(new Event('auth-change'));
         
@@ -124,13 +126,13 @@ export default function Header() {
                       <span className="truncate">{userEmail}</span>
                     </div>
                   </div>
-                  <Link 
-                    href="/admin"
+                  <a 
+                    href="https://admin.deepveir.com"
                     className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-white/5 rounded-lg transition-colors !ml-0"
                   >
                     <LayoutDashboard size={16} />
                     <span>{t('dashboard')}</span>
-                  </Link>
+                  </a>
                   <button 
                     onClick={handleLogoutClick}
                     className="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"

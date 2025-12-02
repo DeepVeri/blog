@@ -1,9 +1,18 @@
 "use client";
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArticleCard } from './page';
 import { API_BASE } from '@/lib/apiConfig';
+
+// 记录页面访问
+const recordVisit = async () => {
+  try {
+    await fetch(`${API_BASE}/api/stats/visit`, { method: 'POST' });
+  } catch (error) {
+    // 静默失败，不影响用户体验
+  }
+};
 
 const formatDate = (value: string | undefined): string => {
   if (!value) return '待发布';
@@ -44,6 +53,11 @@ export default function HomeClient({ initialArticles, initialHasMore, locale }: 
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(initialHasMore);
   const router = useRouter();
+
+  // 页面加载时记录访问
+  useEffect(() => {
+    recordVisit();
+  }, []);
   const pageSize = 6;
 
   const filteredPosts = useMemo(() => {

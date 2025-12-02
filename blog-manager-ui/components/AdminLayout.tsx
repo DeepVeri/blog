@@ -72,7 +72,7 @@ export default function AdminLayout({
       console.error('Logout error:', error);
     } finally {
       localStorage.clear();
-      document.cookie = 'auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+      document.cookie = 'auth_token=; path=/; domain=.deepveir.com; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
       router.push('/login');
     }
   };
@@ -130,7 +130,7 @@ export default function AdminLayout({
 
           <div className="p-4 border-t border-gray-200 dark:border-gray-800">
             <Link 
-                href="http://localhost:3000"
+                href="https://deepveir.com"
                 className={`flex items-center py-3 text-gray-500 hover:text-gray-700 dark:hover:text-gray-200 transition-colors whitespace-nowrap ${
                     isSidebarOpen ? "px-4" : "justify-center px-0"
                 }`}

@@ -72,7 +72,7 @@ public class UserService {
 
         if (user.getRole() == null) {
             Optional<Role> userRole = roleRepository.findAll().stream()
-                    .filter(r -> "USER".equals(r.getName()))
+                    .filter(r -> "user".equalsIgnoreCase(r.getName()))
                     .findFirst();
 
             if (userRole.isPresent()) {

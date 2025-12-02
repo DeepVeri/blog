@@ -61,7 +61,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
       
       // CRITICAL: 保存 Token 到 Cookie，以便 blog-manager-ui 可以读取 (实现简单 SSO)
       // 设置 domain 为 localhost 或不设置 (默认为当前域)，path 为 /，这样不同端口的 localhost 服务都能访问
-      document.cookie = `auth_token=${token}; path=/; max-age=86400`; // 1天过期
+      document.cookie = `auth_token=${token}; path=/; domain=.deepveir.com; max-age=86400`; // 1天过期，跨子域共享
 
       // 显示成功状态
       setIsSuccess(true);

@@ -31,7 +31,7 @@ export default function LoginPage() {
       }
 
       // 保存 Token 到 Cookie，以便中间件可以读取 (简单示例)
-      document.cookie = `auth_token=${data.token || 'demo-token'}; path=/; max-age=86400`;
+      document.cookie = `auth_token=${data.token || 'demo-token'}; path=/; domain=.deepveir.com; max-age=86400`;
       
       // 同时也保存到 localStorage 保持一致性
       localStorage.setItem('user_token', data.token || 'demo-token');

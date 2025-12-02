@@ -1,8 +1,69 @@
 "use client";
 
-import { Users, FileText, Activity, TrendingUp } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Users, FileText, Activity, TrendingUp, Eye } from "lucide-react";
+
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+
+interface StatsData {
+  todayPV: number;
+  todayUV: number;
+  totalPV: number;
+  totalUV: number;
+  totalUsers?: number;
+  totalArticles?: number;
+}
 
 export default function AdminDashboard() {
+  const [stats, setStats] = useState<StatsData>({
+    todayPV: 0,
+    todayUV: 0,
+    totalPV: 0,
+    totalUV: 0,
+    totalUsers: 0,
+    totalArticles: 0,
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        // 获取访问统计
+        const statsRes = await fetch(`${API_BASE}/api/stats/overview`);
+        const statsData = await statsRes.json();
+
+        // 获取用户总数
+        const usersRes = await fetch(`${API_BASE}/api/users?page=0&size=1`);
+        const usersData = await usersRes.json();
+
+        // 获取文章总数
+        const articlesRes = await fetch(`${API_BASE}/api/articles?page=0&size=1`);
+        const articlesData = await articlesRes.json();
+
+        setStats({
+          todayPV: statsData.todayPV || 0,
+          todayUV: statsData.todayUV || 0,
+          totalPV: statsData.totalPV || 0,
+          totalUV: statsData.totalUV || 0,
+          totalUsers: usersData.totalElements || 0,
+          totalArticles: articlesData.totalElements || 0,
+        });
+      } catch (error) {
+        console.error('Failed to fetch stats:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStats();
+  }, []);
+
+  const formatNumber = (num: number) => {
+    if (num >= 10000) return (num / 10000).toFixed(1) + 'w';
+    if (num >= 1000) return (num / 1000).toFixed(1) + 'k';
+    return num.toString();
+  };
+
   return (
     <div className="space-y-8">
       <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
@@ -13,30 +74,26 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard 
           title="总用户数" 
-          value="12" 
-          trend="+20%" 
+          value={loading ? "-" : formatNumber(stats.totalUsers || 0)} 
           icon={Users} 
           color="bg-blue-500"
         />
         <StatCard 
           title="文章总数" 
-          value="45" 
-          trend="+5" 
+          value={loading ? "-" : formatNumber(stats.totalArticles || 0)} 
           icon={FileText} 
           color="bg-purple-500"
         />
         <StatCard 
-          title="今日访问" 
-          value="1,204" 
-          trend="+12%" 
+          title="今日访问 (PV/UV)" 
+          value={loading ? "-" : `${formatNumber(stats.todayPV)} / ${formatNumber(stats.todayUV)}`} 
           icon={Activity} 
           color="bg-green-500"
         />
         <StatCard 
-          title="总阅读量" 
-          value="89.2k" 
-          trend="+8%" 
-          icon={TrendingUp} 
+          title="总访问量 (PV)" 
+          value={loading ? "-" : formatNumber(stats.totalPV)} 
+          icon={Eye} 
           color="bg-orange-500"
         />
       </div>
@@ -54,16 +111,13 @@ export default function AdminDashboard() {
   );
 }
 
-function StatCard({ title, value, trend, icon: Icon, color }: any) {
+function StatCard({ title, value, icon: Icon, color }: any) {
   return (
     <div className="bg-white dark:bg-[#1a1a1a] p-6 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-md transition-shadow">
       <div className="flex items-center justify-between mb-4">
-        <div className={`p-3 rounded-xl ${color} bg-opacity-10 text-white`}>
-          <Icon size={24} className={`text-${color.replace('bg-', '')}`} style={{ color: 'inherit' }} />
+        <div className={`p-3 rounded-xl ${color} bg-opacity-10`}>
+          <Icon size={24} className={color.replace('bg-', 'text-')} />
         </div>
-        <span className="text-sm font-medium text-green-500 bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded-lg">
-          {trend}
-        </span>
       </div>
       <h3 className="text-gray-500 dark:text-gray-400 text-sm font-medium mb-1">{title}</h3>
       <p className="text-2xl font-bold text-gray-900 dark:text-white">{value}</p>

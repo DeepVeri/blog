@@ -40,7 +40,7 @@ public class UserController {
         user.setUserId(dto.getUserId());
         user.setEmail(dto.getEmail());
         user.setPassword(dto.getPassword());
-        user.setName(dto.getName());
+        user.setUsername(dto.getUsername());
         user.setStatus(dto.getStatus());
         user.setAvatar(dto.getAvatar());
         user.setBio(dto.getBio());
@@ -90,7 +90,7 @@ public class UserController {
         User userDetails = new User();
         userDetails.setEmail(dto.getEmail());
         userDetails.setPassword(dto.getPassword());
-        userDetails.setName(dto.getName());
+        userDetails.setUsername(dto.getUsername());
         userDetails.setStatus(dto.getStatus());
         userDetails.setAvatar(dto.getAvatar());
         userDetails.setBio(dto.getBio());

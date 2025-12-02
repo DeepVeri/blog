@@ -75,10 +75,11 @@ CREATE TABLE `organizations` (
 -- ----------------------------
 CREATE TABLE `users` (
   `id` binary(16) NOT NULL,
-  `user_id` varchar(50) NOT NULL COMMENT 'Readable User ID',
+  `user_id` varchar(50) NOT NULL COMMENT 'UUID 格式',
   `email` varchar(100) NOT NULL,
   `password` varchar(255) NOT NULL,
-  `name` varchar(50) DEFAULT NULL,
+  `username` varchar(50) DEFAULT NULL COMMENT '用户名/昵称',
+  `role_name` varchar(50) DEFAULT NULL COMMENT '角色名称（冗余）',
   `role_id` varchar(50) DEFAULT NULL COMMENT 'References roles.role_id',
   `avatar` varchar(255) DEFAULT NULL,
   `bio` varchar(500) DEFAULT NULL,
@@ -227,10 +228,11 @@ INSERT INTO `role_menus` (`role_id`, `menu_id`) VALUES
 
 -- Users
 -- Passwords are '123456' (BCrypt)
-INSERT INTO `users` (`id`, `user_id`, `email`, `password`, `name`, `role_id`, `org_id`, `status`, `avatar`, `bio`, `website`, `organization`, `job_title`, `phone`) VALUES
-(UNHEX(REPLACE(UUID(),'-','')), 'admin', 'admin@example.com', '$2b$12$PQKBGgX9133JNnIb0g5auObRBpFVZ.dZ83EakC5A.vItRN2QRofQ.', '管理员', 'admin', 'dev-dept', 1, 'https://api.dicebear.com/7.x/avataaars/svg?seed=admin', '系统管理员', 'https://example.com', '研发部', 'Senior Developer', '13800000000'),
-(UNHEX(REPLACE(UUID(),'-','')), 'editor', 'editor@example.com', '$2b$12$PQKBGgX9133JNnIb0g5auObRBpFVZ.dZ83EakC5A.vItRN2QRofQ.', '编辑人员', 'editor', 'ops-dept', 1, 'https://api.dicebear.com/7.x/avataaars/svg?seed=editor', '内容创作与编辑', NULL, '运维部', 'Content Editor', '13900000000'),
-(UNHEX(REPLACE(UUID(),'-','')), 'test', 'test@example.com', '$2b$12$PQKBGgX9133JNnIb0g5auObRBpFVZ.dZ83EakC5A.vItRN2QRofQ.', '测试用户', 'user', 'dev-dept', 1, 'https://api.dicebear.com/7.x/avataaars/svg?seed=test', '普通测试用户', NULL, '研发部', 'QA Engineer', '13700000000');
+-- user_id 使用 UUID 格式
+INSERT INTO `users` (`id`, `user_id`, `email`, `password`, `username`, `role_name`, `role_id`, `org_id`, `status`, `avatar`, `bio`, `website`, `organization`, `job_title`, `phone`) VALUES
+(UNHEX(REPLACE(UUID(),'-','')), UUID(), 'admin@example.com', '$2b$12$PQKBGgX9133JNnIb0g5auObRBpFVZ.dZ83EakC5A.vItRN2QRofQ.', '管理员', '超级管理员', 'admin', 'dev-dept', 1, 'https://api.dicebear.com/7.x/avataaars/svg?seed=admin', '系统管理员', 'https://example.com', '研发部', 'Senior Developer', '13800000000'),
+(UNHEX(REPLACE(UUID(),'-','')), UUID(), 'editor@example.com', '$2b$12$PQKBGgX9133JNnIb0g5auObRBpFVZ.dZ83EakC5A.vItRN2QRofQ.', '编辑人员', '内容编辑', 'editor', 'ops-dept', 1, 'https://api.dicebear.com/7.x/avataaars/svg?seed=editor', '内容创作与编辑', NULL, '运维部', 'Content Editor', '13900000000'),
+(UNHEX(REPLACE(UUID(),'-','')), UUID(), 'test@example.com', '$2b$12$PQKBGgX9133JNnIb0g5auObRBpFVZ.dZ83EakC5A.vItRN2QRofQ.', '测试用户', '普通用户', 'user', 'dev-dept', 1, 'https://api.dicebear.com/7.x/avataaars/svg?seed=test', '普通测试用户', NULL, '研发部', 'QA Engineer', '13700000000');
 
 -- Categories
 INSERT INTO `categories` (`id`, `category_id`, `name`, `description`, `sort_order`) VALUES

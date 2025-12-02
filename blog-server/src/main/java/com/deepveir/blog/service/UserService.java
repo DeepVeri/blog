@@ -39,7 +39,7 @@ public class UserService {
         if (keyword == null || keyword.trim().isEmpty()) {
             return userRepository.findAll();
         }
-        return userRepository.findByEmailContainingIgnoreCaseOrNameContainingIgnoreCase(keyword, keyword);
+        return userRepository.findByEmailContainingIgnoreCaseOrUsernameContainingIgnoreCase(keyword, keyword);
     }
 
     public Optional<User> getUserById(UUID id) {
@@ -115,7 +115,7 @@ public class UserService {
     public Optional<User> updateUser(UUID id, User userDetails) {
         return userRepository.findById(id).map(user -> {
             if (userDetails.getEmail() != null) user.setEmail(userDetails.getEmail());
-            if (userDetails.getName() != null) user.setName(userDetails.getName());
+            if (userDetails.getUsername() != null) user.setUsername(userDetails.getUsername());
             if (userDetails.getAvatar() != null) user.setAvatar(userDetails.getAvatar());
             if (userDetails.getBio() != null) user.setBio(userDetails.getBio());
             if (userDetails.getWebsite() != null) user.setWebsite(userDetails.getWebsite());

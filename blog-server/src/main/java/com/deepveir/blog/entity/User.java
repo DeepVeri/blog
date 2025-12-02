@@ -36,11 +36,25 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String password;
 
-    private String name;
+    private String username;  // 用户名/昵称
+    
+    @Column(name = "role_name")
+    private String roleName;  // 角色名称（冗余字段）
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id", referencedColumnName = "role_id")
     private Role role;
+    
+    @PrePersist
+    public void prePersist() {
+        if (this.userId == null || this.userId.isEmpty()) {
+            this.userId = UUID.randomUUID().toString();
+        }
+        // 自动填充 roleName
+        if (this.role != null && this.roleName == null) {
+            this.roleName = this.role.getName();
+        }
+    }
 
     // 所属组织（实体关联，多层级树的一部分）
     @ManyToOne(fetch = FetchType.EAGER)

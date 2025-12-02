@@ -10,7 +10,8 @@ public class UserRequestDto {
     private String userId;
     private String email;
     private String password;
-    private String name;
+    private String username;
+    private String roleName;
     private Integer status;
 
     private String avatar;

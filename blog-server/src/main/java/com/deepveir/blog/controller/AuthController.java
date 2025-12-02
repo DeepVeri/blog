@@ -1,6 +1,8 @@
 package com.deepveir.blog.controller;
 
+import com.deepveir.blog.entity.Role;
 import com.deepveir.blog.entity.User;
+import com.deepveir.blog.repository.RoleRepository;
 import com.deepveir.blog.repository.UserRepository;
 import lombok.Data;
 import org.springframework.http.ResponseEntity;
@@ -15,41 +17,40 @@ import java.util.Map;
 public class AuthController {
 
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public AuthController(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public AuthController(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
-        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-            return ResponseEntity.badRequest().body(Map.of("error", "该邮箱已被注册"));
-        }
+        try {
+            if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+                return ResponseEntity.badRequest().body(Map.of("error", "该邮箱已被注册"));
+            }
 
-        User user = new User();
-        user.setEmail(request.getEmail());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        
-        // 生成 userId
-        String email = request.getEmail();
-        String baseId = email != null ? email.split("@")[0] : "user";
-        baseId = baseId.toLowerCase().replaceAll("[^a-z0-9]", "");
-        if (baseId == null || baseId.length() < 2) {
-            baseId = "user" + System.currentTimeMillis();
-        }
-        String finalUserId = baseId;
-        int suffix = 1;
-        while (userRepository.findByUserId(finalUserId).isPresent()) {
-            finalUserId = baseId + suffix;
-            suffix++;
-        }
-        user.setUserId(finalUserId);
-        
-        userRepository.save(user);
+            User user = new User();
+            user.setEmail(request.getEmail());
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
+            // userId 由 @PrePersist 自动生成 UUID
+            
+            // 分配默认角色 "user"
+            roleRepository.findByRoleId("user").ifPresent(role -> {
+                user.setRole(role);
+                user.setRoleName(role.getName());
+            });
+            
+            userRepository.save(user);
 
-        return ResponseEntity.ok(Map.of("message", "注册成功"));
+            return ResponseEntity.ok(Map.of("message", "注册成功"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+        }
     }
 
     @PostMapping("/login")

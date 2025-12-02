@@ -351,4 +351,15 @@ INSERT INTO `article_tags` (`article_id`, `tag_id`) VALUES
 ('rest-vs-graphql', 'backend'),
 ('career-interview-tips', 'algorithm');
 
+-- ----------------------------
+-- 11. Table structure for site_stats (访问统计)
+-- ----------------------------
+CREATE TABLE IF NOT EXISTS `site_stats` (
+  `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
+  `date` DATE NOT NULL UNIQUE COMMENT '统计日期',
+  `page_views` BIGINT NOT NULL DEFAULT 0 COMMENT '页面浏览量 (PV)',
+  `unique_visitors` BIGINT NOT NULL DEFAULT 0 COMMENT '独立访客数 (UV)',
+  INDEX `idx_date` (`date`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='网站访问统计';
+
 SET FOREIGN_KEY_CHECKS = 1;

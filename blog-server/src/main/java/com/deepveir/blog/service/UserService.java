@@ -61,15 +61,17 @@ public class UserService {
         if (user.getUserId() == null || user.getUserId().isEmpty()) {
             String email = user.getEmail();
             String baseId = email != null ? email.split("@")[0] : "user";
-            baseId = baseId.toLowerCase().replaceAll("[^a-z0-9-]", "-");
-            if (baseId.isEmpty()) {
-                baseId = "user";
+            // 只保留字母数字，移除其他字符
+            baseId = baseId.toLowerCase().replaceAll("[^a-z0-9]", "");
+            // 如果为空或太短，使用默认值 + 时间戳
+            if (baseId == null || baseId.length() < 2) {
+                baseId = "user" + System.currentTimeMillis();
             }
-            // 检查 userId 是否已存在，如果存在则添加随机后缀
+            // 检查 userId 是否已存在，如果存在则添加数字后缀
             String finalUserId = baseId;
             int suffix = 1;
             while (userRepository.findByUserId(finalUserId).isPresent()) {
-                finalUserId = baseId + "-" + suffix;
+                finalUserId = baseId + suffix;
                 suffix++;
             }
             user.setUserId(finalUserId);

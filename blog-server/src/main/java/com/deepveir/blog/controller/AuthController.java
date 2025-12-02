@@ -31,6 +31,22 @@ public class AuthController {
         User user = new User();
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
+        
+        // 生成 userId
+        String email = request.getEmail();
+        String baseId = email != null ? email.split("@")[0] : "user";
+        baseId = baseId.toLowerCase().replaceAll("[^a-z0-9]", "");
+        if (baseId == null || baseId.length() < 2) {
+            baseId = "user" + System.currentTimeMillis();
+        }
+        String finalUserId = baseId;
+        int suffix = 1;
+        while (userRepository.findByUserId(finalUserId).isPresent()) {
+            finalUserId = baseId + suffix;
+            suffix++;
+        }
+        user.setUserId(finalUserId);
+        
         userRepository.save(user);
 
         return ResponseEntity.ok(Map.of("message", "注册成功"));

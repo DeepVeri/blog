@@ -65,7 +65,14 @@ public class UserService {
             if (baseId.isEmpty()) {
                 baseId = "user";
             }
-            user.setUserId(baseId);
+            // 检查 userId 是否已存在，如果存在则添加随机后缀
+            String finalUserId = baseId;
+            int suffix = 1;
+            while (userRepository.findByUserId(finalUserId).isPresent()) {
+                finalUserId = baseId + "-" + suffix;
+                suffix++;
+            }
+            user.setUserId(finalUserId);
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));

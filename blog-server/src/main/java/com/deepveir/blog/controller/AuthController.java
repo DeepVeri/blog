@@ -132,7 +132,16 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout() {
-        // JWT 是无状态的，客户端删除 Token 即可
+        // 更新 token_version 使当前 Token 失效
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.getDetails() instanceof JwtAuthenticationFilter.JwtUserDetails) {
+            JwtAuthenticationFilter.JwtUserDetails details = 
+                (JwtAuthenticationFilter.JwtUserDetails) auth.getDetails();
+            userRepository.findByUserId(details.getUserId()).ifPresent(user -> {
+                user.setTokenVersion((user.getTokenVersion() != null ? user.getTokenVersion() : 0) + 1);
+                userRepository.save(user);
+            });
+        }
         return ResponseEntity.ok(Map.of("message", "退出成功"));
     }
 

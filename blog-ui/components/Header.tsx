@@ -111,8 +111,12 @@ export default function Header() {
   const confirmLogout = async () => {
     setIsLoggingOut(true);
     try {
-      // 调用后端退出接口
-      await fetch(`${API_BASE}/api/auth/logout`, { method: 'POST' });
+      // 调用后端退出接口（带 Token，让后端使 Token 失效）
+      const token = getCookie('auth_token') || localStorage.getItem('user_token');
+      await fetch(`${API_BASE}/api/auth/logout`, { 
+        method: 'POST',
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+      });
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
@@ -137,9 +141,9 @@ export default function Header() {
       <header className="wrapper header">
         <Link href="/" className="logo">DeepVeir</Link>
         <nav className="nav">
-          <Link href="/">{t('home')}</Link>
-          <Link href="#">{t('category')}</Link>
-          <Link href="#">{t('about')}</Link>
+          <Link href={`/${locale}`}>{t('home')}</Link>
+          <Link href={`/${locale}/categories`}>{t('category')}</Link>
+          <Link href={`/${locale}/about`}>{t('about')}</Link>
 
           <div className="h-5 w-[1px] bg-gray-200 dark:bg-gray-700 mx-2"></div> {/* Divider */}
 

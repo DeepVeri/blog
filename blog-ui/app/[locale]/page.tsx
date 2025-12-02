@@ -6,7 +6,9 @@ export type ArticleCard = {
   id: string;
   title: string;
   excerpt: string;
-  tag: string;
+  category: string;     // 分类名称
+  categoryId: string;   // 分类ID
+  tags: string[];       // 标签数组
   date: string;
   readTime: string;
   slug: string;
@@ -51,7 +53,9 @@ async function getArticles(): Promise<{ articles: ArticleCard[]; hasMore: boolea
       id: article.articleId || article.id,
       title: article.title,
       excerpt: article.summary?.trim() || stripMarkdown(article.content)?.slice(0, 120) || '暂无描述',
-      tag: article.category?.name || article.tags?.[0]?.name || '未分类',
+      category: article.category?.name || '未分类',
+      categoryId: article.category?.categoryId || '',
+      tags: (article.tags || []).map((t: any) => t.name),
       date: formatDate(article.publishedAt),
       readTime: article.readTime || '待补充阅读时长',
       slug: article.articleId || article.id

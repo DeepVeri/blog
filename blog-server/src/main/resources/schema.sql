@@ -209,7 +209,12 @@ INSERT INTO `menus` (`id`, `menu_id`, `parent_id`, `name`, `path`, `icon`, `sort
 (UNHEX(REPLACE(UUID(),'-','')), 'roles', NULL, '角色管理', '/roles', 'Shield', 7, 'MENU', 1),
 (UNHEX(REPLACE(UUID(),'-','')), 'menus', NULL, '菜单管理', '/menus', 'Menu', 8, 'MENU', 1),
 (UNHEX(REPLACE(UUID(),'-','')), 'orgs', NULL, '组织管理', '/organizations', 'Building', 9, 'MENU', 1),
+(UNHEX(REPLACE(UUID(),'-','')), 'system', NULL, '系统管理', NULL, 'Settings', 90, 'MENU', 1),
 (UNHEX(REPLACE(UUID(),'-','')), 'settings', NULL, '系统设置', '/settings', 'Settings', 99, 'MENU', 1);
+
+-- 系统管理子菜单
+INSERT INTO `menus` (`id`, `menu_id`, `parent_id`, `name`, `path`, `icon`, `sort_order`, `type`, `visible`) VALUES
+(UNHEX(REPLACE(UUID(),'-','')), 'pages', 'system', '页面管理', '/pages', 'FileCode', 1, 'MENU', 1);
 
 -- Role-Menu Associations
 -- Admin gets everything
@@ -364,5 +369,90 @@ CREATE TABLE IF NOT EXISTS `site_stats` (
   `unique_visitors` BIGINT NOT NULL DEFAULT 0 COMMENT '独立访客数 (UV)',
   INDEX `idx_date` (`date`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='网站访问统计';
+
+-- ----------------------------
+-- 12. Table structure for pages (页面内容管理)
+-- ----------------------------
+CREATE TABLE IF NOT EXISTS `pages` (
+  `id` BINARY(16) NOT NULL,
+  `page_id` VARCHAR(50) NOT NULL UNIQUE COMMENT '页面标识，如 about, contact',
+  `title` VARCHAR(255) NOT NULL COMMENT '页面标题',
+  `title_en` VARCHAR(255) DEFAULT NULL COMMENT '英文标题',
+  `subtitle` VARCHAR(255) DEFAULT NULL COMMENT '副标题',
+  `subtitle_en` VARCHAR(255) DEFAULT NULL COMMENT '英文副标题',
+  `content` LONGTEXT COMMENT '页面内容（Markdown）',
+  `content_en` LONGTEXT COMMENT '英文内容',
+  `email` VARCHAR(100) DEFAULT NULL COMMENT '联系邮箱',
+  `github` VARCHAR(255) DEFAULT NULL COMMENT 'GitHub 链接',
+  `website` VARCHAR(255) DEFAULT NULL COMMENT '网站链接',
+  `status` TINYINT DEFAULT 1 COMMENT '状态：1=发布，0=草稿',
+  `create_time` DATETIME(6) DEFAULT CURRENT_TIMESTAMP(6),
+  `update_time` DATETIME(6) DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `UK_page_id` (`page_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='页面内容管理';
+
+-- ----------------------------
+-- Initial data for pages
+-- ----------------------------
+INSERT INTO `pages` (`id`, `page_id`, `title`, `title_en`, `subtitle`, `subtitle_en`, `content`, `content_en`, `email`, `github`, `website`, `status`) VALUES
+(UNHEX(REPLACE(UUID(),'-','')), 'about', '关于 DeepVeir', 'About DeepVeir', '探索、构建与思考', 'Explore, Build & Think', 
+'## 👋 你好！
+
+欢迎来到 **DeepVeir Blog**，这是一个专注于技术分享与深度思考的个人博客。
+
+### 🎯 博客定位
+
+这里主要分享以下内容：
+
+- **技术架构**：系统设计、微服务、云原生等
+- **AI 应用**：大模型、机器学习、智能应用开发
+- **前端开发**：React、Next.js、TypeScript 等现代前端技术
+- **产品设计**：用户体验、产品思维、设计系统
+
+### 💡 为什么叫 DeepVeir？
+
+**Deep** 代表深度思考，**Veir** 是一个自造词，寓意探索与发现。我们相信，真正的技术成长来自于深入理解原理，而非浅尝辄止。
+
+### 🛠️ 技术栈
+
+本博客使用以下技术构建：
+
+- **前端**：Next.js 14 + TypeScript + Tailwind CSS
+- **后端**：Spring Boot 3 + MySQL + JWT
+- **部署**：Docker + Nginx
+
+### 📬 联系我
+
+如果你有任何问题或建议，欢迎通过以下方式联系我。',
+'## 👋 Hello!
+
+Welcome to **DeepVeir Blog**, a personal blog focused on technology sharing and deep thinking.
+
+### 🎯 Blog Focus
+
+Here we mainly share:
+
+- **System Architecture**: System design, microservices, cloud native, etc.
+- **AI Applications**: Large models, machine learning, intelligent application development
+- **Frontend Development**: React, Next.js, TypeScript and other modern frontend technologies
+- **Product Design**: User experience, product thinking, design systems
+
+### 💡 Why DeepVeir?
+
+**Deep** represents deep thinking, **Veir** is a coined word meaning exploration and discovery. We believe that true technical growth comes from deeply understanding principles, not just scratching the surface.
+
+### 🛠️ Tech Stack
+
+This blog is built with:
+
+- **Frontend**: Next.js 14 + TypeScript + Tailwind CSS
+- **Backend**: Spring Boot 3 + MySQL + JWT
+- **Deployment**: Docker + Nginx
+
+### 📬 Contact Me
+
+If you have any questions or suggestions, feel free to contact me.',
+'contact@deepveir.com', 'https://github.com/DeepVeir', 'https://www.deepveir.com', 1);
 
 SET FOREIGN_KEY_CHECKS = 1;

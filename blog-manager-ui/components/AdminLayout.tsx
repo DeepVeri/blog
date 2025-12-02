@@ -7,6 +7,15 @@ import * as LucideIcons from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { API_BASE } from "@/lib/apiConfig";
 
+interface MenuItem {
+  id?: string;
+  menuId: string;
+  name: string;
+  path: string | null;
+  icon: string;
+  children?: MenuItem[];
+}
+
 // Helper to dynamically get icon component
 const DynamicIcon = ({ name, size = 20, className }: { name: string; size?: number; className?: string }) => {
   // @ts-ignore
@@ -27,7 +36,8 @@ export default function AdminLayout({
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
   
-  const [menuItems, setMenuItems] = useState<any[]>([]);
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const [expandedMenus, setExpandedMenus] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     const email = localStorage.getItem('user_email');
@@ -39,20 +49,23 @@ export default function AdminLayout({
       fetch(`${API_BASE}/api/menus/user/${userId}`)
         .then(res => res.json())
         .then(data => {
+          console.log("Menu data received:", data);
           // 如果后端返回空或者出错，我们至少保留一个控制台入口防止完全空白
           if (Array.isArray(data) && data.length > 0) {
             setMenuItems(data);
           } else {
             // Fallback
-            setMenuItems([{ name: "控制台", path: "/", icon: "Home" }]);
+            setMenuItems([{ menuId: "dashboard", name: "控制台", path: "/", icon: "Home" }]);
           }
         })
         .catch(err => {
           console.error("Failed to load menus:", err);
-          setMenuItems([{ name: "控制台", path: "/", icon: "Home" }]);
+          setMenuItems([{ menuId: "dashboard", name: "控制台", path: "/", icon: "Home" }]);
         });
     } else {
-        // No user ID, maybe show default public menus or nothing
+        // No user ID, show default menus
+        console.log("No userId found, using default menus");
+        setMenuItems([{ menuId: "dashboard", name: "控制台", path: "/", icon: "Home" }]);
     }
 
     // Click outside to close menu
@@ -102,11 +115,76 @@ export default function AdminLayout({
 
           <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
             {menuItems.map((item) => {
-              // 简单的激活判断
-              const isActive = pathname === item.path || (item.path !== "/" && pathname.startsWith(item.path));
+              const hasChildren = item.children && item.children.length > 0;
+              const isExpanded = expandedMenus.has(item.menuId);
+              const isActive = item.path && (pathname === item.path || (item.path !== "/" && pathname.startsWith(item.path)));
+              const isChildActive = hasChildren && item.children?.some(child => 
+                child.path && (pathname === child.path || pathname.startsWith(child.path))
+              );
+
+              // 有子菜单的情况
+              if (hasChildren) {
+                return (
+                  <div key={item.id || item.menuId}>
+                    <button
+                      onClick={() => {
+                        const newExpanded = new Set(expandedMenus);
+                        if (isExpanded) {
+                          newExpanded.delete(item.menuId);
+                        } else {
+                          newExpanded.add(item.menuId);
+                        }
+                        setExpandedMenus(newExpanded);
+                      }}
+                      className={`w-full flex items-center py-3 rounded-lg transition-colors whitespace-nowrap ${
+                        isSidebarOpen ? "px-4" : "justify-center px-0"
+                      } ${
+                        isChildActive
+                          ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
+                          : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5"
+                      }`}
+                      title={!isSidebarOpen ? item.name : ""}
+                    >
+                      <DynamicIcon name={item.icon} size={20} className="flex-shrink-0" />
+                      <span className={`font-medium transition-all duration-300 overflow-hidden flex-1 text-left ${
+                        isSidebarOpen ? "ml-3 opacity-100" : "w-0 opacity-0"
+                      }`}>
+                        {item.name}
+                      </span>
+                      {isSidebarOpen && (
+                        <ChevronDown size={16} className={`transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+                      )}
+                    </button>
+                    {/* 子菜单 */}
+                    {isExpanded && isSidebarOpen && (
+                      <div className="ml-4 mt-1 space-y-1">
+                        {item.children?.map((child) => {
+                          const isChildItemActive = child.path && (pathname === child.path || pathname.startsWith(child.path));
+                          return (
+                            <Link
+                              key={child.id || child.menuId}
+                              href={child.path || '#'}
+                              className={`flex items-center py-2 px-4 rounded-lg transition-colors whitespace-nowrap ${
+                                isChildItemActive
+                                  ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
+                                  : "text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5"
+                              }`}
+                            >
+                              <DynamicIcon name={child.icon} size={16} className="flex-shrink-0" />
+                              <span className="ml-3 text-sm">{child.name}</span>
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                );
+              }
+
+              // 无子菜单的普通菜单项
               return (
                 <Link
-                  key={item.id || item.path} // Use ID if available, fallback to path
+                  key={item.id || item.menuId}
                   href={item.path || '#'}
                   className={`flex items-center py-3 rounded-lg transition-colors whitespace-nowrap ${
                     isSidebarOpen ? "px-4" : "justify-center px-0"
@@ -163,7 +241,7 @@ export default function AdminLayout({
         {/* Top Header */}
         <header className="h-16 bg-white dark:bg-[#1a1a1a] border-b border-gray-200 dark:border-gray-800 flex items-center justify-between px-8 sticky top-0 z-40">
           <h2 className="text-lg font-semibold text-gray-800 dark:text-white">
-            {menuItems.find(item => pathname === item.path || (item.path !== "/" && pathname.startsWith(item.path)))?.name || "管理后台"}
+            {menuItems.find(item => pathname === item.path || (item.path && item.path !== "/" && pathname.startsWith(item.path)))?.name || "管理后台"}
           </h2>
 
           <div className="flex items-center space-x-4">

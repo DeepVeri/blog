@@ -65,7 +65,7 @@ export default function HomeClient({ initialArticles, initialHasMore, locale }: 
       const matchesSearch =
         post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         post.excerpt.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesTag = activeTag ? post.tag === activeTag : true;
+      const matchesTag = activeTag ? post.tags.includes(activeTag) : true;
       return matchesSearch && matchesTag;
     });
   }, [articles, activeTag, searchQuery]);
@@ -85,7 +85,9 @@ export default function HomeClient({ initialArticles, initialHasMore, locale }: 
         id: article.articleId || article.id,
         title: article.title,
         excerpt: article.summary?.trim() || stripMarkdown(article.content)?.slice(0, 120) || '暂无描述',
-        tag: article.category?.name || article.tags?.[0]?.name || '未分类',
+        category: article.category?.name || '未分类',
+        categoryId: article.category?.categoryId || '',
+        tags: (article.tags || []).map((t: any) => t.name),
         date: formatDate(article.publishedAt),
         readTime: article.readTime || '待补充阅读时长',
         slug: article.articleId || article.id
@@ -141,22 +143,43 @@ export default function HomeClient({ initialArticles, initialHasMore, locale }: 
             className="post-card"
             onClick={() => router.push(`/${locale}/article/${post.slug}`)}
           >
-            <div className="post-meta">
-              <span
-                className={`post-tag ${activeTag === post.tag ? 'active' : ''}`}
-                onClick={e => {
-                  e.stopPropagation();
-                  setActiveTag(activeTag === post.tag ? null : post.tag);
-                }}
-              >
-                {post.tag}
-              </span>
-              <span className="post-date">{post.date}</span>
+            {/* 顶部：标签 */}
+            <div className="post-tags">
+              {post.tags.length > 0 ? (
+                post.tags.map((tag, index) => (
+                  <span
+                    key={index}
+                    className={`post-tag ${activeTag === tag ? 'active' : ''}`}
+                    onClick={e => {
+                      e.stopPropagation();
+                      setActiveTag(activeTag === tag ? null : tag);
+                    }}
+                  >
+                    {tag}
+                  </span>
+                ))
+              ) : (
+                <span className="post-tag">无标签</span>
+              )}
             </div>
+            
             <h3>{post.title}</h3>
             <p className="post-excerpt">{post.excerpt}</p>
+            
+            {/* 底部：分类 + 日期 + 阅读时间 */}
             <div className="post-footer">
-              <span className="read-time">{post.readTime}</span>
+              <div className="post-meta-bottom">
+                <span 
+                  className="post-category clickable"
+                  onClick={e => {
+                    e.stopPropagation();
+                    router.push(`/${locale}/categories/${post.categoryId}`);
+                  }}
+                >
+                  {post.category}
+                </span>
+                <span className="post-date">{post.date}</span>
+              </div>
               <span className="read-more">阅读全文 →</span>
             </div>
           </article>

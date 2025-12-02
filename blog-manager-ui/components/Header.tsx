@@ -111,8 +111,12 @@ export default function Header() {
   const confirmLogout = async () => {
     setIsLoggingOut(true);
     try {
-      // 调用后端退出接口
-      await fetch(`${API_BASE}/api/auth/logout`, { method: 'POST' });
+      // 调用后端退出接口（带 Token，让后端使 Token 失效）
+      const token = getCookie('auth_token') || localStorage.getItem('user_token');
+      await fetch(`${API_BASE}/api/auth/logout`, { 
+        method: 'POST',
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+      });
     } catch (error) {
       console.error('Logout error:', error);
     } finally {

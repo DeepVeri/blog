@@ -72,3 +72,11 @@ build/
 # =======================
 nginx/ssl/
 nginx/logs/
+
+# =======================
+# 本地部署配置（不提交）
+# =======================
+dockercompose-bushu.yml
+docker部署.md
+GPUcontion.md
+nginx/conf.d/default.conf

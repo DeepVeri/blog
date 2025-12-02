@@ -39,3 +39,11 @@ spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
 # 首次建表时设置为 always，之后改为 never 避免数据被清空
 spring.sql.init.mode=never
 spring.sql.init.encoding=UTF-8
+
+# =================================
+# JWT 配置
+# =================================
+# 密钥（生产环境请使用随机生成的强密钥，至少32字符）
+jwt.secret=your-secret-key-at-least-32-characters-long
+# Token 过期时间（毫秒），默认 24 小时
+jwt.expiration=86400000

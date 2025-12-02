@@ -90,6 +90,7 @@ CREATE TABLE `users` (
   `phone` varchar(20) DEFAULT NULL,
   `status` int DEFAULT '1',
   `last_login_time` datetime(6) DEFAULT NULL,
+  `token_version` int DEFAULT '1' COMMENT 'Token版本号，用于单点登录',
   `create_time` datetime(6) DEFAULT CURRENT_TIMESTAMP(6),
   `update_time` datetime(6) DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
   PRIMARY KEY (`id`),

@@ -24,15 +24,65 @@ export default function Header() {
   const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
+  // 从 Cookie 获取值的辅助函数
+  const getCookie = (name: string): string | null => {
+    const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+    return match ? match[2] : null;
+  };
+
+  // 验证 Token 并获取用户信息
+  const verifyToken = async () => {
+    const token = getCookie('auth_token') || localStorage.getItem('user_token');
+    if (!token) {
+      setUserEmail(null);
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_BASE}/api/auth/me`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        setUserEmail(data.email);
+        // 同步到 localStorage
+        localStorage.setItem('user_email', data.email);
+        localStorage.setItem('user_token', token);
+      } else {
+        // Token 无效，清除登录状态
+        setUserEmail(null);
+        localStorage.removeItem('user_token');
+        localStorage.removeItem('user_email');
+        document.cookie = 'auth_token=; path=/; domain=.deepveir.com; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+      }
+    } catch (error) {
+      console.error('Token verification failed:', error);
+      // 网络错误时保持现有状态
+      const email = localStorage.getItem('user_email');
+      setUserEmail(email);
+    }
+  };
+
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme') || 'light';
     setTheme(savedTheme);
     document.documentElement.setAttribute('data-theme', savedTheme);
 
-    const email = localStorage.getItem('user_email');
-    if (email) {
-      setUserEmail(email);
-    }
+    // 验证 Token
+    verifyToken();
+
+    // Listen for auth changes
+    const handleAuthChange = () => verifyToken();
+    window.addEventListener('auth-change', handleAuthChange);
+    window.addEventListener('storage', handleAuthChange);
+
+    return () => {
+      window.removeEventListener('auth-change', handleAuthChange);
+      window.removeEventListener('storage', handleAuthChange);
+    };
   }, []);
 
   const toggleTheme = () => {
@@ -70,6 +120,8 @@ export default function Header() {
       setTimeout(() => {
         localStorage.removeItem('user_token');
         localStorage.removeItem('user_email');
+        // 清除跨子域 Cookie
+        document.cookie = 'auth_token=; path=/; domain=.deepveir.com; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
         setUserEmail(null);
         setIsLoggingOut(false);
         setIsLogoutConfirmOpen(false);

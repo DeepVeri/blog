@@ -80,6 +80,10 @@ public class User implements UserDetails {
     private Integer status = 1;  // 1: 正常, 0: 禁用
     private LocalDateTime lastLoginTime;
     
+    // Token 版本号，用于单点登录控制
+    @Column(name = "token_version")
+    private Integer tokenVersion = 1;
+    
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createTime;

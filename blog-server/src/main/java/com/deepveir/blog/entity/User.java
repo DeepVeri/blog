@@ -77,7 +77,7 @@ public class User implements UserDetails {
     private String phone;        // 手机号
     
     // Status & Audit
-    private Integer status = 1;  // 1: 正常, 0: 禁用
+    private Integer status = 0;  // 1: 正常, 0: 禁用（新用户默认禁用，需管理员审核）
     private LocalDateTime lastLoginTime;
     
     // Token 版本号，用于单点登录控制

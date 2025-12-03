@@ -52,20 +52,11 @@ public class AuthController {
             
             User savedUser = userRepository.save(user);
             
-            // 生成 JWT Token（新用户 tokenVersion 默认为 1）
-            String token = jwtUtil.generateToken(
-                savedUser.getUserId(), 
-                savedUser.getEmail(), 
-                savedUser.getRoleName(),
-                savedUser.getTokenVersion()
-            );
-
+            // 新用户默认禁用，不返回 token，需管理员审核后才能登录
             return ResponseEntity.ok(Map.of(
-                "message", "注册成功",
-                "token", token,
+                "message", "注册成功，请等待管理员审核后方可登录",
                 "email", savedUser.getEmail(),
-                "userId", savedUser.getUserId(),
-                "roleName", savedUser.getRoleName() != null ? savedUser.getRoleName() : ""
+                "userId", savedUser.getUserId()
             ));
         } catch (Exception e) {
             e.printStackTrace();
@@ -78,6 +69,10 @@ public class AuthController {
         return userRepository.findByEmail(request.getEmail())
                 .filter(user -> passwordEncoder.matches(request.getPassword(), user.getPassword()))
                 .map(user -> {
+                    // 检查用户是否被禁用
+                    if (!user.isEnabled()) {
+                        return ResponseEntity.status(403).body(Map.of("error", "账号已被禁用，请联系管理员"));
+                    }
                     // 更新 Token 版本号（实现单点登录，旧 Token 失效）
                     int newVersion = (user.getTokenVersion() != null ? user.getTokenVersion() : 0) + 1;
                     user.setTokenVersion(newVersion);

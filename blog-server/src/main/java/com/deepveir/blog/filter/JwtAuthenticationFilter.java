@@ -39,13 +39,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String roleName = jwtUtil.getRoleName(token);
             Integer tokenVersion = jwtUtil.getTokenVersion(token);
             
-            // 验证 Token 版本号（单点登录检查）
-            boolean isValidVersion = userRepository.findByUserId(userId)
-                    .map(user -> tokenVersion != null && tokenVersion.equals(user.getTokenVersion()))
+            // 验证 Token 版本号（单点登录检查）和用户状态
+            boolean isValid = userRepository.findByUserId(userId)
+                    .map(user -> tokenVersion != null && tokenVersion.equals(user.getTokenVersion()) && user.isEnabled())
                     .orElse(false);
             
-            if (!isValidVersion) {
-                // Token 版本号不匹配，说明用户在其他地方登录了，此 Token 已失效
+            if (!isValid) {
+                // Token 版本号不匹配或用户已被禁用，此 Token 已失效
                 filterChain.doFilter(request, response);
                 return;
             }
